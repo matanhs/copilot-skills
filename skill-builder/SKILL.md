@@ -161,13 +161,31 @@ tar xzf <skill-name>.tar.gz -C ~/.copilot/skills/
 ```
 
 ### Option B: GitHub repo (recommended for teams)
+
+#### First publish (new repo)
 ```bash
 # Structure the repo with skills at the root:
 # repo-root/<skill-name>/SKILL.md
-git init && git add . && git commit -m "Add <skill-name> skill"
+git init && git add . && git commit -m "feat: add <skill-name> skill"
 git remote add origin git@github.com:<owner>/<repo>.git
 git push -u origin main
 ```
+
+#### Update existing repo
+```bash
+cd /tmp && rm -rf <repo> && git clone git@github.com:<owner>/<repo>.git
+cp -r ~/.copilot/skills/<skill-name>/ /tmp/<repo>/<skill-name>/
+cd /tmp/<repo>
+git add <skill-name>/    # stage only the changed skill
+git --no-pager diff --cached --stat   # verify staged files
+git commit -m "feat: <concise description of change>"
+git push origin main
+rm -rf /tmp/<repo>       # clean up
+```
+
+> **Rules**: Stage specific files only — never `git add -A` or `git add .`.
+> Verify the diff before committing. Clean up the temp clone after push.
+
 Colleagues install with:
 ```bash
 gh skill install <owner>/<repo> <skill-name>
@@ -192,4 +210,5 @@ After saving the first version:
 1. Identify the weakest or most ambiguous part of the skill
 2. Ask the user about those specific areas
 3. Refine and re-validate
-4. Suggest related skills or customizations to create next
+4. If the skill is published to a GitHub repo, push the update using the **Option B: Update existing repo** flow from Phase 6
+5. Suggest related skills or customizations to create next
